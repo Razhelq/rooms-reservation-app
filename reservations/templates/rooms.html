@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block extra_header %}
+    <title>Rooms</title>
+{% endblock %}
+{% block content %}
+    {{ deleted }}
+    <table>
+    {% for room in rooms %}
+        <tr>
+            <td>Name:</td>
+            <td>{{ room.name }}</td>
+        </tr>
+        <tr>
+            <td>Capacity:</td>
+            <td>{{ room.capacity }}</td>
+        </tr>
+        <tr>
+            <td>Projector availablity:</td>
+            <td>{{ room.projector_availability }}</td>
+        </tr>
+        <tr><td><br><br></td></tr>
+    {% endfor %}
+    </table>
+{% endblock %}}

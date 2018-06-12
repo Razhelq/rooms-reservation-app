@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block extra_header %}
+    <title>Room details</title>
+{% endblock %}
+{% block content %}
+    <table>
+        <tr>
+            <td>Name:</td>
+            <td>{{ room.name }}</td>
+            <td><a href="{% url 'reservation' room.id %}">Rezerwuj salę</a></td>
+        </tr>
+        <tr>
+            <td>Capacity:</td>
+            <td>{{ room.capacity }}</td>
+        </tr>
+        <tr>
+            <td>Projector availablity:</td>
+            <td>{{ room.projector_availability }}</td>
+        </tr>
+    </table>
+{% endblock %}}

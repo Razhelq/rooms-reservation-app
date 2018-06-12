@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block extra_header %}
+    <title>Modify Room</title>
+{% endblock %}
+{% block content %}
+    <form method="POST" action="{% url 'modify-room' room.id %}">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td><label>Name:</label></td>
+                <td><input type="text" name="name" value="{{ room.name }}" placeholder="{{ room.name }}"</td>
+            </tr>
+            <tr>
+                <td><label>Capacity:</label></td>
+                <td><input type="number" name="capacity" value="{{ room.capacity }}" placeholder="{{ room.capacity }}"</td>
+            </tr>
+            <tr>
+                <td><label>Projector availablity:</label>
+                <td>
+                    <select name="projector">
+                        <option value='yes'>Available</option>
+                        <option value='no'>Not available</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="submit" name="submit">Modify room</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <br><br>
+    {{ added }}
+{% endblock %}}

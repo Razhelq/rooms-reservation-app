@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block extra_header %}
+    <title>New Room</title>
+{% endblock %}
+{% block content %}
+    <form method="POST" action="{% url 'new-room' %}">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td><label>Name:</label></td>
+                <td><input type="text" name="name"</td>
+            </tr>
+            <tr>
+                <td><label>Capacity:</label></td>
+                <td><input type="number" name="capacity"</td>
+            </tr>
+            <tr>
+                <td><label>Projector availablity:</label>
+                <td>
+                    <select name="projector">
+                        <option value='yes'>Available</option>
+                        <option value='no'>Not available</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="submit" name="submit">Add room</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <br><br>
+    {{ added }}
+{% endblock %}}
