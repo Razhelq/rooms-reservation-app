@@ -1,21 +1,23 @@
 from django.shortcuts import render, redirect
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from .models import Room, Reservation
 from datetime import datetime
 
 
-def index(request):
-    rooms = Room.objects.all()
-    return render(request, 'index.html', {
-        'rooms': rooms
-    })
+class Index(View):
+    def get(self, request):
+        rooms = Room.objects.all()
+        return render(request, 'index.html', {
+            'rooms': rooms
+        })
 
 
-@csrf_exempt
-def new_room(request):
-    if request.method == 'GET':
+class NewRoom(View):
+    def get(self, request):
         return render(request, 'new_room.html')
-    if request.method == 'POST':
+
+    def post(self, request):
         name = request.POST.get('name')
         capacity = request.POST.get('capacity')
         projector = request.POST.get('projector')
@@ -35,13 +37,15 @@ def new_room(request):
         })
 
 
-def modify_room(request, id):
-    room = Room.objects.get(id=id)
-    if request.method == 'GET':
+class ModifyRoom(View):
+    def get(self, request, id):
+        room = Room.objects.get(id=id)
         return render(request, 'modify_room.html', {
             'room': room
         })
-    if request.method == 'POST':
+
+    def post(self, request, id):
+        room = Room.objects.get(id=id)
         name = request.POST.get('name')
         capacity = request.POST.get('capacity')
         projector = request.POST.get('projector')
@@ -60,71 +64,75 @@ def modify_room(request, id):
         })
 
 
-def delete_room(request, id):
-    room = Room.objects.get(id=id).delete()
-    return render(request, 'rooms.html', {
-        'deleted': 'The room has been removed'
-    })
-
-
-def room(request, id):
-    room = Room.objects.get(id=id)
-    return render(request, 'room.html', {
-        'room': room
-    })
-
-
-def rooms(request):
-    rooms = Room.objects.all()
-    return render(request, 'rooms.html', {
-        'rooms': rooms
-    })
-
-
-@csrf_exempt
-def reservation(request, id):
-    room = Room.objects.get(id=id)
-    date = request.POST.get('date')
-    comment = request.POST.get('comment')
-    if Reservation.objects.filter(rooms=room).filter(date=date):
-        return render(request, 'reservation.html', {
-            'room': room,
-            'response': 'This room is already booked'
+class DeleteRoom(View):
+    def get(self, request, id):
+        room = Room.objects.get(id=id).delete()
+        return render(request, 'rooms.html', {
+            'deleted': 'The room has been removed'
         })
-    elif date < str(datetime.now()):
-        return render(request, 'reservation.html', {
-            'room': room,
-            'response': 'Wrong date'
+
+
+class RoomView(View):
+    def get(self, request, id):
+        room = Room.objects.get(id=id)
+        return render(request, 'room.html', {
+            'room': room
         })
-    else:
-        r = Reservation(
-            date=date,
-            comment=comment,
-            rooms=room
-        )
-        r.save()
-        return redirect('../index')
 
 
-def search(request):
-    name = request.GET.get('name')
-    date = request.GET.get('date')
-    capacity = request.GET.get('capacity')
-    projector = request.GET.get('projector')
-    rooms = Room.objects.all()
-    if name:
-        rooms = rooms.filter(name=name)
-    if date:
-        rooms = rooms.exclude(reservation__date=date)
-    if capacity:
-        rooms = rooms.filter(capacity__gte=capacity)
-    if projector:
-        rooms = rooms.filter(projector_availability=projector)
-    if rooms:
-        return render(request, 'search.html', {
+class Rooms(View):
+    def get(self, request):
+        rooms = Room.objects.all()
+        return render(request, 'rooms.html', {
             'rooms': rooms
         })
-    else:
-        return render(request, 'search.html', {
-            'empty': 'There are no rooms available for the given search criteria'
-        })
+
+
+class ReservationView(View):
+    def post(self, request, id):
+        room = Room.objects.get(id=id)
+        date = request.POST.get('date')
+        comment = request.POST.get('comment')
+        if Reservation.objects.filter(rooms=room).filter(date=date):
+            return render(request, 'reservation.html', {
+                'room': room,
+                'response': 'This room is already booked'
+            })
+        elif date < str(datetime.now()):
+            return render(request, 'reservation.html', {
+                'room': room,
+                'response': 'Wrong date'
+            })
+        else:
+            r = Reservation(
+                date=date,
+                comment=comment,
+                rooms=room
+            )
+            r.save()
+            return redirect('../index')
+
+
+class Search(View):
+    def get(self, request):
+        name = request.GET.get('name')
+        date = request.GET.get('date')
+        capacity = request.GET.get('capacity')
+        projector = request.GET.get('projector')
+        rooms = Room.objects.all()
+        if name:
+            rooms = rooms.filter(name=name)
+        if date:
+            rooms = rooms.exclude(reservation__date=date)
+        if capacity:
+            rooms = rooms.filter(capacity__gte=capacity)
+        if projector:
+            rooms = rooms.filter(projector_availability=projector)
+        if rooms:
+            return render(request, 'search.html', {
+                'rooms': rooms
+            })
+        else:
+            return render(request, 'search.html', {
+                'empty': 'There are no rooms available for the given search criteria'
+            })
