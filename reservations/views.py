@@ -5,7 +5,10 @@ from datetime import datetime
 
 
 def index(request):
-    return render(request, 'index.html')
+    rooms = Room.objects.all()
+    return render(request, 'index.html', {
+        'rooms': rooms
+    })
 
 
 @csrf_exempt
@@ -78,29 +81,50 @@ def rooms(request):
     })
 
 
+@csrf_exempt
 def reservation(request, id):
     room = Room.objects.get(id=id)
-    if request.method == "GET":
+    date = request.POST.get('date')
+    comment = request.POST.get('comment')
+    if Reservation.objects.filter(rooms=room).filter(date=date):
         return render(request, 'reservation.html', {
-            'room': room
+            'room': room,
+            'response': 'This room is already booked'
         })
-    if request.method == "POST":
-        date = request.POST.get('date')
-        comment = request.POST.get('comment')
-        if Reservation.objects.get(date=date):
-            return render(request, 'reservation.html', {
-                'room': room,
-                'reserved': 'This room is already booked'
-            })
-        if date < datetime.now():
-            return render(request, 'reservation.html', {
-                'room': room,
-                'reserved': 'Wrong date'
-            })
+    elif date < str(datetime.now()):
+        return render(request, 'reservation.html', {
+            'room': room,
+            'response': 'Wrong date'
+        })
+    else:
         r = Reservation(
             date=date,
             comment=comment,
-            room=room
+            rooms=room
         )
         r.save()
-        return redirect('index/')
+        return redirect('../index')
+
+
+def search(request):
+    name = request.GET.get('name')
+    date = request.GET.get('date')
+    capacity = request.GET.get('capacity')
+    projector = request.GET.get('projector')
+    rooms = Room.objects.all()
+    if name:
+        rooms = rooms.filter(name=name)
+    if date:
+        rooms = rooms.exclude(reservation__date=date)
+    if capacity:
+        rooms = rooms.filter(capacity__gte=capacity)
+    if projector:
+        rooms = rooms.filter(projector_availability=projector)
+    if rooms:
+        return render(request, 'search.html', {
+            'rooms': rooms
+        })
+    else:
+        return render(request, 'search.html', {
+            'empty': 'There are no rooms available for the given search criteria'
+        })

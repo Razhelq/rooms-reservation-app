@@ -10,9 +10,53 @@
 </head>
 <body>
     {% block content %}
+        <h5><strong>Rooms Reservation</strong></h5>
         <br><br>
-        <h1>Rooms Reservations</h1>
-        <br>
+        <h6><strong>Search for a room</strong></h6>
+        <form action="{% url 'search' %}">
+            <table>
+                    <tr>
+                        <td>
+                            <label>Room name:</label>
+                        </td>
+                        <td>
+                            <input type="text" name="name">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Minimum room capacity:</label>
+                        </td>
+                        <td>
+                            <input type="number" name="capacity">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Day:</label>
+                        </td>
+                        <td>
+                            <input type="date" name="date">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Projector availability:</label>
+                        </td>
+                        <td>
+                            <input type="radio" id="True" name="projector" value="True">
+                            <label for="True">Yes</label>
+                            <input type="radio" id="False" name="projector" value="False">
+                            <label for="False">No</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button type="Submit">Search</button>
+                        </td>
+                    </tr>
+            </table>
+        </form>
     {% endblock %}
 </body>
 </html>

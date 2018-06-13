@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block extra_header %}
+    <title>Reservation</title>
+{% endblock %}
+{% block content %}
+    {{ empty }}
+    <table>
+        {% for room in rooms %}
+            <tr>
+                <td>Name:</td>
+                <td>{{ room.name }} &nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                <td rowspan="3">
+                    <form method="POST" action="{% url 'reservation' room.id %}">
+                        {% csrf_token %}
+                        <table>
+                            <tr style="text-align:center">
+                                <td><strong>Reservation</strong></td>
+                                <td><button type="submit">Book the room</button></td>
+                            </tr>
+                            <tr>
+                                <td>Date:</td>
+                                <td><input type="date" name="date" /></td>
+                            </tr>
+                            <tr>
+                                <td>Comment:</td>
+                                <td><input type="text" name="comment" /></td>
+                            </tr>
+                        </table>
+                    </form>
+                </td>
+            <tr>
+                <td>Capacity:</td>
+                <td>{{ room.capacity }}</td>
+            </tr>
+            <tr>
+                <td>Projector availablity: &nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                <td>{{ room.projector_availability }}</td>
+            </tr>
+            <tr><td colspan="5"><br><hr><br></td></tr>
+        {% endfor %}
+    </table>
+{% endblock %}}
